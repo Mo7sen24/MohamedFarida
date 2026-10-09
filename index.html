@@ -2771,7 +2771,6 @@ setTimeout(() => {
         }
 
 
-
 let autoScrollStartTime = null;
 let lastScrollFrameTime = null;
 
@@ -2783,12 +2782,20 @@ function stepAutoScroll(timestamp) {
         return;
     }
 
+    // Support calls that don't receive a timestamp
+    if (typeof timestamp !== "number") {
+        scrollAnimationFrame =
+            requestAnimationFrame(stepAutoScroll);
+        return;
+    }
+
     if (autoScrollStartTime === null) {
         autoScrollStartTime = timestamp;
         lastScrollFrameTime = timestamp;
     }
 
     const elapsed = timestamp - autoScrollStartTime;
+
     const deltaTime = Math.min(
         timestamp - lastScrollFrameTime,
         32
@@ -2796,9 +2803,7 @@ function stepAutoScroll(timestamp) {
 
     lastScrollFrameTime = timestamp;
 
-    const currentScroll =
-        window.pageYOffset ||
-        document.documentElement.scrollTop;
+    const currentScroll = window.scrollY;
 
     const maxScroll =
         document.documentElement.scrollHeight -
@@ -2816,21 +2821,21 @@ function stepAutoScroll(timestamp) {
 
         setTimeout(() => {
             if (isAutoScrolling) {
-                stepAutoScroll();
+                scrollAnimationFrame =
+                    requestAnimationFrame(stepAutoScroll);
             }
         }, 2000);
 
         return;
     }
 
-    const rampProgress = Math.min(elapsed / 2500, 1);
-    const smoothEase = rampProgress * rampProgress;
-    const startFactor = 0.08 + (0.92 * smoothEase);
+    // Smoothly accelerate during the first 2.5 seconds
+    const progress = Math.min(elapsed / 2500, 1);
+    const ease = progress * progress;
+    const startFactor = 0.08 + 0.92 * ease;
 
     const movement =
-        scrollSpeed *
-        (deltaTime / 16.67) *
-        startFactor;
+        scrollSpeed * (deltaTime / 16.67) * startFactor;
 
     window.scrollTo({
         top: currentScroll + movement,
@@ -2841,33 +2846,17 @@ function stepAutoScroll(timestamp) {
         requestAnimationFrame(stepAutoScroll);
 }
 
-        window.addEventListener(
-            'wheel',
-            () => {
+window.addEventListener('wheel', () => {
+    if (isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, { passive: true });
 
-                if (isAutoScrolling)
-                    toggleAutoScroll();
-
-            },
-            {
-                passive: true
-            }
-        );
-
-
-        window.addEventListener(
-            'touchmove',
-            () => {
-
-                if (isAutoScrolling)
-                    toggleAutoScroll();
-
-            },
-            {
-                passive: true
-            }
-        );
-
+window.addEventListener('touchmove', () => {
+    if (isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, { passive: true });
 
         /* ===================================================== */
         /* PARTICLES */
