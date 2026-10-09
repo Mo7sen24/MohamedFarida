@@ -283,80 +283,205 @@
             pointer-events: none;
             transform: scale(0.9);
         }
-    
+        
+/* Smooth cinematic transition */
+#entranceOverlay {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 1.5s;
+}
 
-        /* Mobile floating controls: collapsed button, expandable control panel */
-        @media (max-width: 640px) {
-            #topWidgetBar {
-                position: fixed !important;
-                left: 50% !important;
-                right: auto !important;
-                top: auto !important;
-                bottom: calc(12px + env(safe-area-inset-bottom)) !important;
-                transform: translateX(-50%) !important;
-                width: 56px !important;
-                height: 56px !important;
-                min-height: 56px !important;
-                padding: 5px !important;
-                display: flex !important;
-                flex-wrap: wrap;
-                align-content: flex-start;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                overflow: hidden !important;
-                border-radius: 50% !important;
-                z-index: 99999 !important;
-                transition: width .3s ease, height .3s ease, border-radius .3s ease, padding .3s ease;
-            }
+#mainContent {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(25px);
+    transition:
+        opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 1.8s;
+}
 
-            #topWidgetBar #controlsToggle {
-                display: flex !important;
-                position: absolute !important;
-                top: 5px !important;
-                left: 5px !important;
-                transform: none !important;
-                z-index: 5;
-            }
+#mainContent.site-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+        opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s;
+}
 
-            #topWidgetBar > :not(#controlsToggle) {
-                display: none !important;
-            }
+#entranceOverlay.finished {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+        
+/* ===== Mobile Responsive Fixes ===== */
 
-            #topWidgetBar.controls-open {
-                width: calc(100vw - 24px) !important;
-                height: auto !important;
-                min-height: 112px !important;
-                padding: 58px 10px 12px !important;
-                border-radius: 20px !important;
-                overflow: visible !important;
-                justify-content: center;
-            }
+* {
+    box-sizing: border-box;
+}
 
-            #topWidgetBar.controls-open #controlsToggle {
-                top: 7px !important;
-                left: 50% !important;
-                transform: translateX(-50%) !important;
-            }
+html {
+    width: 100%;
+    overflow-x: clip;
+    -webkit-text-size-adjust: 100%;
+}
 
-            #topWidgetBar.controls-open > :not(#controlsToggle) {
-                display: flex !important;
-            }
+body {
+    width: 100%;
+    min-width: 0;
+    overflow-x: clip;
+    -webkit-tap-highlight-color: transparent;
+}
 
-            #topWidgetBar.controls-open > div.h-4 {
-                display: none !important;
-            }
+/* Fix video sizing on mobile browsers */
+#entranceOverlay {
+    width: 100%;
+    height: 100vh;
+    height: 100dvh;
+}
 
-            #topWidgetBar.controls-open > a {
-                display: inline-flex !important;
-                align-items: center;
-            }
+#entranceVideo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Keep the invitation content within the screen */
+#mainContent {
+    width: 100%;
+    min-width: 0;
+    overflow-wrap: break-word;
+}
+
+#mainContent img,
+#mainContent iframe {
+    max-width: 100%;
+}
+
+/* Mobile control bar */
+@media (max-width: 640px) {
+
+    body {
+        padding-bottom: 120px;
+    }
+
+    #topWidgetBar {
+        position: fixed;
+        left: 50%;
+        right: auto;
+        bottom: calc(10px + env(safe-area-inset-bottom));
+
+        width: calc(100% - 16px);
+        max-width: 480px;
+
+        transform: translateX(-50%);
+
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: center;
+
+        gap: 6px;
+        padding: 8px;
+
+        overflow: visible;
+        box-sizing: border-box;
+
+        border-radius: 20px;
+        z-index: 40;
+    }
+
+    #topWidgetBar > button,
+    #topWidgetBar > select,
+    #topWidgetBar > a {
+        flex-shrink: 0;
+    }
+
+    #topWidgetBar button,
+    #topWidgetBar select,
+    #topWidgetBar a {
+        min-height: 34px;
+    }
+
+    #topWidgetBar .h-4.w-px {
+        height: 22px;
+        flex-shrink: 0;
+    }
+
+    /* Prevent oversized text from stretching the layout */
+    .hero-title {
+        overflow-wrap: anywhere;
+        word-break: normal;
+        letter-spacing: 0.02em;
+    }
+
+    .hero-quote {
+        font-size: 16px;
+        line-height: 1.8;
+    }
+
+    .hero-badge {
+        max-width: 100%;
+        letter-spacing: 0.12em;
+        line-height: 1.8;
+    }
+
+    /* Keep cards comfortable on narrow screens */
+    .glass-card {
+        min-width: 0;
+    }
+
+    /* Disable desktop hover tilt on touch screens */
+    .gallery-img {
+        transform: none;
+    }
+
+    /* Keep the RSVP form and buttons inside the screen */
+    #rsvpForm input,
+    #rsvpForm select,
+    #rsvpForm textarea {
+        width: 100%;
+        min-width: 0;
+        font-size: 16px;
+    }
+
+    #mapModal > div {
+        max-height: 85dvh;
+        overflow-y: auto;
+    }
+
+    #mapModal iframe {
+        min-height: 240px;
+    }
+}
+
+/* Respect phones with a home indicator */
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+    @media (max-width: 640px) {
+        body {
+            padding-bottom: calc(120px + env(safe-area-inset-bottom));
         }
-
+    }
+}
+        
     </style>
 </head>
 
 <body class="relative min-h-screen text-slate-100 selection:bg-amber-500 selection:text-slate-950 pb-28 sm:pb-0 overflow-x-hidden">
+
+    <!-- CUSTOM BLURRED BACKGROUND: replace background.jpg with your image filename -->
+    <div id="customBackground" aria-hidden="true"
+         style="position:fixed; inset:0; z-index:0; overflow:hidden; pointer-events:none;">
+        <img src="IMG_6317.jpeg" alt=""
+             style="position:absolute; inset:-12px; width:calc(100% + 24px); height:calc(100% + 24px); object-fit:cover; filter:blur(5px);">
+        <div style="position:absolute; inset:0; background:rgba(3,7,18,0.58);"></div>
+    </div>
 
     <!-- Ambient Background -->
 
@@ -453,7 +578,7 @@
                 <i class="fas fa-play"></i>
 
                 <span data-i18n="openDoor">
-                    Open Royal Invitation
+                   Click Here To Open The Invitation
                 </span>
 
             </button>
@@ -470,18 +595,6 @@
     <div
         id="topWidgetBar"
         class="fixed bottom-4 left-1/2 -translate-x-1/2 sm:translate-x-0 sm:left-auto sm:top-6 sm:bottom-auto sm:right-6 z-40 flex items-center gap-2 sm:gap-3 bg-slate-950/95 backdrop-blur-xl border border-amber-500/50 p-2 sm:p-2.5 rounded-full shadow-2xl max-w-[95vw] overflow-x-auto">
-
-        <!-- Mobile expand/collapse button -->
-        <button
-            id="controlsToggle"
-            type="button"
-            aria-label="إظهار أدوات التحكم"
-            aria-expanded="false"
-            onclick="toggleControlsBar()"
-            class="controls-toggle"
-            style="width:44px;height:44px;min-width:44px;border-radius:50%;border:1px solid #d6ad60;background:#111827;color:#f5d58a;font-size:24px;display:none;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;">
-            ☷
-        </button>
 
         <!-- Language -->
 
@@ -603,7 +716,7 @@
 
     <div
         id="mainContent"
-        class="relative z-20 opacity-0 transition-opacity duration-1000 pb-24">
+        class="relative z-20 pb-24">
 
 
         <!-- ===================================================== -->
@@ -2680,76 +2793,51 @@
         );
 
 
-        function finishEntrance() {
 
-            const overlay =
-                document.getElementById(
-                    'entranceOverlay'
-                );
+function finishEntrance() {
+    const overlay = document.getElementById('entranceOverlay');
+    const mainContent = document.getElementById('mainContent');
 
-            const mainContent =
-                document.getElementById(
-                    'mainContent'
-                );
+    // منع تشغيل الانتقال أكثر من مرة
+    if (overlay.classList.contains('finished')) {
+        return;
+    }
 
+    // إخفاء شاشة الفيديو بسلاسة
+    overlay.classList.add('finished');
 
-            if (
-                overlay.classList.contains(
-                    'finished'
-                )
-            ) {
-                return;
-            }
+    // إظهار الموقع بحركة ناعمة
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            mainContent.classList.add('site-visible');
+        });
+    });
 
+    // تشغيل الموسيقى بعد انتهاء الفيديو
+    if (audioElement) {
+        audioElement.volume = 1;
 
-            overlay.classList.add(
-                'finished'
-            );
-
-
-            /* Show website */
-            mainContent.classList.remove('opacity-0');
-
-            /* Make the wedding music audible only after the video ends. */
-            if (audioElement) {
-                audioElement.volume = 1;
-                if (audioElement.paused) {
-                    playAudio();
-                } else {
-                    isAudioPlaying = true;
-                    updateAudioUI(true);
-                }
-            }
-
-            /* Fade video screen */
-
-            gsap.to(
-                overlay,
-                {
-                    opacity: 0,
-                    duration: 1.2,
-                    ease: "power2.out",
-
-                    onComplete: () => {
-
-                        overlay.style.display =
-                            'none';
-
-
-                        /* Start auto scroll */
-
-                        if (!isAutoScrolling) {
-
-                            toggleAutoScroll();
-
-                        }
-
-                    }
-
-                }
-            );
-
+        if (audioElement.paused) {
+            playAudio();
+        } else {
+            isAudioPlaying = true;
+            updateAudioUI(true);
         }
+    }
+
+    // بدء السكرول التلقائي بعد ظهور الموقع
+
+setTimeout(() => {
+    // Recalculate animation positions after revealing the page
+    if (window.ScrollTrigger) {
+        ScrollTrigger.refresh();
+    }
+
+    if (!isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, 3000);
+}
 
 
         /* ===================================================== */
@@ -2845,95 +2933,92 @@
         }
 
 
-        function stepAutoScroll() {
+let autoScrollStartTime = null;
+let lastScrollFrameTime = null;
 
-            if (!isAutoScrolling)
-                return;
+function stepAutoScroll(timestamp) {
 
+    if (!isAutoScrolling) {
+        autoScrollStartTime = null;
+        lastScrollFrameTime = null;
+        return;
+    }
 
-            const currentScroll =
-                window.pageYOffset ||
-                document.documentElement.scrollTop;
+    // Support calls that don't receive a timestamp
+    if (typeof timestamp !== "number") {
+        scrollAnimationFrame =
+            requestAnimationFrame(stepAutoScroll);
+        return;
+    }
 
+    if (autoScrollStartTime === null) {
+        autoScrollStartTime = timestamp;
+        lastScrollFrameTime = timestamp;
+    }
 
-            const maxScroll =
-                document.documentElement.scrollHeight -
-                window.innerHeight;
+    const elapsed = timestamp - autoScrollStartTime;
 
+    const deltaTime = Math.min(
+        timestamp - lastScrollFrameTime,
+        32
+    );
 
-            if (
-                currentScroll >=
-                maxScroll - 2
-            ) {
+    lastScrollFrameTime = timestamp;
 
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+    const currentScroll = window.scrollY;
 
+    const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
 
-                setTimeout(
-                    () => {
+    if (currentScroll >= maxScroll - 2) {
 
-                        if (
-                            isAutoScrolling
-                        ) {
+        autoScrollStartTime = null;
+        lastScrollFrameTime = null;
 
-                            stepAutoScroll();
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-                        }
-
-                    },
-                    2000
-                );
-
-
-                return;
-
+        setTimeout(() => {
+            if (isAutoScrolling) {
+                scrollAnimationFrame =
+                    requestAnimationFrame(stepAutoScroll);
             }
+        }, 2000);
 
+        return;
+    }
 
-            window.scrollBy({
-                top: scrollSpeed,
-                behavior: 'instant'
-            });
+    // Smoothly accelerate during the first 2.5 seconds
+    const progress = Math.min(elapsed / 2500, 1);
+    const ease = progress * progress;
+    const startFactor = 0.08 + 0.92 * ease;
 
+    const movement =
+        scrollSpeed * (deltaTime / 16.67) * startFactor;
 
-            scrollAnimationFrame =
-                requestAnimationFrame(
-                    stepAutoScroll
-                );
+    window.scrollTo({
+        top: currentScroll + movement,
+        behavior: "instant"
+    });
 
-        }
+    scrollAnimationFrame =
+        requestAnimationFrame(stepAutoScroll);
+}
 
+window.addEventListener('wheel', () => {
+    if (isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, { passive: true });
 
-        window.addEventListener(
-            'wheel',
-            () => {
-
-                if (isAutoScrolling)
-                    toggleAutoScroll();
-
-            },
-            {
-                passive: true
-            }
-        );
-
-
-        window.addEventListener(
-            'touchmove',
-            () => {
-
-                if (isAutoScrolling)
-                    toggleAutoScroll();
-
-            },
-            {
-                passive: true
-            }
-        );
-
+window.addEventListener('touchmove', () => {
+    if (isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, { passive: true });
 
         /* ===================================================== */
         /* PARTICLES */
@@ -3688,23 +3773,6 @@
                     'hidden'
                 );
 
-        }
-
-    
-
-        /* Toggle the mobile controls panel */
-        function toggleControlsBar() {
-            const bar = document.getElementById('topWidgetBar');
-            const button = document.getElementById('controlsToggle');
-            if (!bar || !button) return;
-
-            const isOpen = bar.classList.toggle('controls-open');
-            button.textContent = isOpen ? '×' : '☷';
-            button.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
-            button.setAttribute(
-                'aria-label',
-                isOpen ? 'إخفاء أدوات التحكم' : 'إظهار أدوات التحكم'
-            );
         }
 
     </script>
