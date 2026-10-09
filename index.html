@@ -2771,67 +2771,75 @@ setTimeout(() => {
         }
 
 
-        function stepAutoScroll() {
 
-            if (!isAutoScrolling)
-                return;
+let autoScrollStartTime = null;
+let lastScrollFrameTime = null;
 
+function stepAutoScroll(timestamp) {
 
-            const currentScroll =
-                window.pageYOffset ||
-                document.documentElement.scrollTop;
+    if (!isAutoScrolling) {
+        autoScrollStartTime = null;
+        lastScrollFrameTime = null;
+        return;
+    }
 
+    if (autoScrollStartTime === null) {
+        autoScrollStartTime = timestamp;
+        lastScrollFrameTime = timestamp;
+    }
 
-            const maxScroll =
-                document.documentElement.scrollHeight -
-                window.innerHeight;
+    const elapsed = timestamp - autoScrollStartTime;
+    const deltaTime = Math.min(
+        timestamp - lastScrollFrameTime,
+        32
+    );
 
+    lastScrollFrameTime = timestamp;
 
-            if (
-                currentScroll >=
-                maxScroll - 2
-            ) {
+    const currentScroll =
+        window.pageYOffset ||
+        document.documentElement.scrollTop;
 
-                window.scrollTo({
-                    top: 0,
-                    behavior: 'smooth'
-                });
+    const maxScroll =
+        document.documentElement.scrollHeight -
+        window.innerHeight;
 
+    if (currentScroll >= maxScroll - 2) {
 
-                setTimeout(
-                    () => {
+        autoScrollStartTime = null;
+        lastScrollFrameTime = null;
 
-                        if (
-                            isAutoScrolling
-                        ) {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
 
-                            stepAutoScroll();
-
-                        }
-
-                    },
-                    2000
-                );
-
-
-                return;
-
+        setTimeout(() => {
+            if (isAutoScrolling) {
+                stepAutoScroll();
             }
+        }, 2000);
 
+        return;
+    }
 
-            window.scrollBy({
-                top: scrollSpeed,
-                behavior: 'instant'
-            });
+    const rampProgress = Math.min(elapsed / 2500, 1);
+    const smoothEase = rampProgress * rampProgress;
+    const startFactor = 0.08 + (0.92 * smoothEase);
 
+    const movement =
+        scrollSpeed *
+        (deltaTime / 16.67) *
+        startFactor;
 
-            scrollAnimationFrame =
-                requestAnimationFrame(
-                    stepAutoScroll
-                );
+    window.scrollTo({
+        top: currentScroll + movement,
+        behavior: "instant"
+    });
 
-        }
-
+    scrollAnimationFrame =
+        requestAnimationFrame(stepAutoScroll);
+}
 
         window.addEventListener(
             'wheel',
