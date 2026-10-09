@@ -283,6 +283,41 @@
             pointer-events: none;
             transform: scale(0.9);
         }
+        
+/* Smooth cinematic transition */
+#entranceOverlay {
+    opacity: 1;
+    visibility: visible;
+    transition:
+        opacity 1.5s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 1.5s;
+}
+
+#mainContent {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(25px);
+    transition:
+        opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s linear 1.8s;
+}
+
+#mainContent.site-visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+    transition:
+        opacity 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        transform 1.8s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0s;
+}
+
+#entranceOverlay.finished {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
     </style>
 </head>
 
@@ -529,7 +564,7 @@
 
     <div
         id="mainContent"
-        class="relative z-20 opacity-0 transition-opacity duration-1000 pb-24">
+        class="relative z-20 pb-24">
 
 
         <!-- ===================================================== -->
@@ -2606,71 +2641,45 @@
         );
 
 
-        function finishEntrance() {
 
-            const overlay =
-                document.getElementById(
-                    'entranceOverlay'
-                );
+function finishEntrance() {
+    const overlay = document.getElementById('entranceOverlay');
+    const mainContent = document.getElementById('mainContent');
 
-            const mainContent =
-                document.getElementById(
-                    'mainContent'
-                );
-
-
-            if (
-                overlay.classList.contains(
-                    'finished'
-                )
-            ) {
-                return;
-            }
-
-
-            overlay.classList.add(
-                'finished'
-            );
-
-
-            /* Show website */
-            mainContent.classList.remove('opacity-0');
-
-            /* Make the wedding music audible only after the video ends. */
-            if (audioElement) {
-                audioElement.volume = 1;
-                if (audioElement.paused) {
-                    playAudio();
-                } else {
-                    isAudioPlaying = true;
-                    updateAudioUI(true);
-                }
-            }
-
-            /* Fade video screen */
-
-            gsap.to(
-                overlay,
-                {
-                    opacity: 0,
-                    duration: 1.2,
-                    ease: "power2.out",
-
-                    onComplete: () => {
-
-                        overlay.style.display =
-                            'none';
-
-
-                        /* Start auto scroll */
-// Start auto scroll after 5 seconds
-setTimeout(() => {
-    if (!isAutoScrolling) {
-        toggleAutoScroll();
+    // منع تشغيل الانتقال أكثر من مرة
+    if (overlay.classList.contains('finished')) {
+        return;
     }
-}, 5000);
 
-                    }
+    // إخفاء شاشة الفيديو بسلاسة
+    overlay.classList.add('finished');
+
+    // إظهار الموقع بحركة ناعمة
+    requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+            mainContent.classList.add('site-visible');
+        });
+    });
+
+    // تشغيل الموسيقى بعد انتهاء الفيديو
+    if (audioElement) {
+        audioElement.volume = 1;
+
+        if (audioElement.paused) {
+            playAudio();
+        } else {
+            isAudioPlaying = true;
+            updateAudioUI(true);
+        }
+    }
+
+    // بدء السكرول التلقائي بعد ظهور الموقع
+    setTimeout(() => {
+        if (!isAutoScrolling) {
+            toggleAutoScroll();
+        }
+    }, 3000);
+}
 
                 }
             );
