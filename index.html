@@ -371,31 +371,32 @@ body {
         padding-bottom: 120px;
     }
 
-    #topWidgetBar {
-        position: fixed;
-        left: 50%;
-        right: auto;
-        bottom: calc(10px + env(safe-area-inset-bottom));
+    
+#topWidgetBar {
+    position: fixed;
+    left: 50%;
+    right: auto;
+    bottom: calc(10px + env(safe-area-inset-bottom));
 
-        width: calc(100% - 16px);
-        max-width: 480px;
+    width: calc(100% - 16px);
+    max-width: 480px;
 
-        transform: translateX(-50%);
+    transform: translateX(-50%);
 
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: center;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
 
-        gap: 6px;
-        padding: 8px;
+    gap: 4px;
+    padding: 5px;
 
-        overflow: visible;
-        box-sizing: border-box;
+    overflow: visible;
+    box-sizing: border-box;
 
-        border-radius: 20px;
-        z-index: 40;
-    }
+    border-radius: 16px;
+    z-index: 40;
+}
 
     #topWidgetBar > button,
     #topWidgetBar > select,
@@ -406,7 +407,7 @@ body {
     #topWidgetBar button,
     #topWidgetBar select,
     #topWidgetBar a {
-        min-height: 34px;
+        min-height: 28px;
     }
 
     #topWidgetBar .h-4.w-px {
