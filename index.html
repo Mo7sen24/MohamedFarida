@@ -2663,12 +2663,12 @@
 
 
                         /* Start auto scroll */
-
-                        if (!isAutoScrolling) {
-
-                            toggleAutoScroll();
-
-                        }
+// Start auto scroll after 5 seconds
+setTimeout(() => {
+    if (!isAutoScrolling) {
+        toggleAutoScroll();
+    }
+}, 5000);
 
                     }
 
@@ -2810,7 +2810,7 @@
                         }
 
                     },
-                    5000
+                    2000
                 );
 
 
